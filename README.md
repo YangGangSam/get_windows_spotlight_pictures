@@ -1,9 +1,10 @@
 # get_windows_spotlight_pictures
 
-windows only Python program
+windows only Python script
 
-## main
+# 功能
 
-* get the folder of windows spotlight
-* select the correct pictures
-* save
+1. 获取 Windows 10 聚焦的图片并保存在脚本所在目录的 wallpapers 目录下
+
+2. 保存壁纸大小：1920 * 1080
+
