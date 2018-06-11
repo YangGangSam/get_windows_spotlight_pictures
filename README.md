@@ -2,7 +2,7 @@
 
 windows only Python script
 
-# 功能
+## 功能
 
 1. 获取 Windows 10 聚焦的图片并保存在脚本所在目录的 wallpapers 目录下
 
