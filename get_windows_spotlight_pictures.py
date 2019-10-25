@@ -45,8 +45,8 @@ def second_filter():
         wallpaper_2_path = os.path.join(save_folder_temp, wallpaper_2)
         img = Image.open(wallpaper_2_path)
         imgSize = img.size
-        # 筛选出 1920 * 1080 分辨率的壁纸
-        if (imgSize != (1920, 1080)):
+        # 筛选出 1920 * 1080 / 1080 * 1920分辨率的壁纸
+        if (imgSize != (1920, 1080)) and (imgSize !=(1080, 1920)):
             continue
         save_2_path = os.path.join(save_folder, wallpaper_2)
         shutil.copyfile(wallpaper_2_path, save_2_path)
