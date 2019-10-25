@@ -25,21 +25,18 @@ def savefolder():
         os.makedirs(save_folder)
 
 
-def first_filter():
+def wallpapers_temp():
     wallpapers = os.listdir(wallpaper_folder)
     for wallpaper in wallpapers:
         wallpaper_path = os.path.join(wallpaper_folder, wallpaper)
-        # 先初步筛选，貌似也没啥用
-        if (os.path.getsize(wallpaper_path) / 1024) < 150:
-            continue
         time = os.path.getctime(wallpaper_path)
         wallpaper_name = str(time) + '.jpg'
         save_path = os.path.join(save_folder_temp, wallpaper_name)
         shutil.copyfile(wallpaper_path, save_path)
-        print('save wallpaper' + save_path)
+        # print('save wallpaper ' + save_path)
 
 
-def second_filter():
+def wallpapers_filter():
     wallpapers_2 = os.listdir(save_folder_temp)
     for wallpaper_2 in wallpapers_2:
         wallpaper_2_path = os.path.join(save_folder_temp, wallpaper_2)
@@ -50,7 +47,7 @@ def second_filter():
             continue
         save_2_path = os.path.join(save_folder, wallpaper_2)
         shutil.copyfile(wallpaper_2_path, save_2_path)
-        print('save_2 wallpaper' + save_2_path)
+        print('save wallpaper ' + save_2_path)
 
 
 def main():
@@ -62,10 +59,10 @@ def main():
     wallpaper_folder = os.getenv('LOCALAPPDATA') + ('\\Packages\\Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy\\LocalState\\Assets')
 
     #first filter
-    first_filter()
+    wallpapers_temp()
 
     # second filter
-    second_filter()
+    wallpapers_filter()
 
     # delete temp folder
     shutil.rmtree(save_folder_temp)
