@@ -6,7 +6,6 @@ import os
 import shutil
 import sys
 import imghdr
-import hashlib
 import uuid
 from PIL import Image
 
