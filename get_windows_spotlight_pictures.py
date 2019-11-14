@@ -5,6 +5,9 @@
 import os
 import shutil
 import sys
+import imghdr
+import hashlib
+import uuid
 from PIL import Image
 
 
@@ -29,11 +32,12 @@ def wallpapers_temp():
     wallpapers = os.listdir(wallpaper_folder)
     for wallpaper in wallpapers:
         wallpaper_path = os.path.join(wallpaper_folder, wallpaper)
-        time = os.path.getctime(wallpaper_path)
-        wallpaper_name = str(time) + '.jpg'
-        save_path = os.path.join(save_folder_temp, wallpaper_name)
-        shutil.copyfile(wallpaper_path, save_path)
-        # print('save wallpaper ' + save_path)
+        if imghdr.what(wallpaper_path) == 'jpeg':
+            name = uuid.uuid3(uuid.NAMESPACE_DNS, wallpaper)
+            wallpaper_name = str(name) + '.jpg'
+            save_path = os.path.join(save_folder_temp, wallpaper_name)
+            shutil.copyfile(wallpaper_path, save_path)
+            # print('save wallpaper ' + save_path)
 
 
 def wallpapers_filter():
@@ -66,6 +70,8 @@ def main():
 
     # delete temp folder
     shutil.rmtree(save_folder_temp)
+    input()
 
 if __name__ == '__main__':
     main()
+
