@@ -12,9 +12,10 @@ from PIL import Image
 
 def savefolder():
     # save folder
-    global save_folder_temp, save_folder
+    global save_folder_temp, save_folder, save_folder_phone
     save_folder_temp = os.path.dirname(os.path.realpath(__file__)) + '\\wallpapers_temp'
     save_folder = os.path.dirname(os.path.realpath(__file__)) + '\\wallpapers'
+    save_folder_phone = os.path.dirname(os.path.realpath(__file__)) + '\\wallpapers_phone'
     
     if os.path.exists(save_folder_temp):
         print('existed')
@@ -25,6 +26,11 @@ def savefolder():
         print('existed')
     else:
         os.makedirs(save_folder)
+
+    if os.path.exists(save_folder_phone):
+            print('existed')
+    else:
+        os.makedirs(save_folder_phone)
 
 
 def wallpapers_temp():
@@ -46,11 +52,16 @@ def wallpapers_filter():
         img = Image.open(wallpaper_2_path)
         imgSize = img.size
         # 筛选出 1920 * 1080 / 1080 * 1920分辨率的壁纸
-        if (imgSize != (1920, 1080)) and (imgSize !=(1080, 1920)):
+        if (imgSize == (1920, 1080)):
+            save_2_path = os.path.join(save_folder, wallpaper_2)
+            shutil.copyfile(wallpaper_2_path, save_2_path)
+            print('save desktop wallpaper ' + save_2_path)
+        elif (imgSize == (1080, 1920)):
+            save_3_path = os.path.join(save_folder_phone, wallpaper_2)
+            shutil.copyfile(wallpaper_2_path, save_3_path)
+            print('save phone wallpaper ' + save_3_path)
+        else:
             continue
-        save_2_path = os.path.join(save_folder, wallpaper_2)
-        shutil.copyfile(wallpaper_2_path, save_2_path)
-        print('save wallpaper ' + save_2_path)
 
 
 def main():
