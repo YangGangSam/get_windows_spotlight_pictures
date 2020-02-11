@@ -5,6 +5,7 @@ __pycache__/
 
 # wallpaper folder
 wallpapers/
+wallpapers_phone/
 
 # C extensions
 *.so
