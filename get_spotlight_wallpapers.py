@@ -4,10 +4,9 @@
         
 import os
 import shutil
-import sys
 import imghdr
-import uuid
 from PIL import Image
+import hashlib
 
 
 def savefolder():
@@ -38,8 +37,12 @@ def wallpapers_temp():
     for wallpaper in wallpapers:
         wallpaper_path = os.path.join(wallpaper_folder, wallpaper)
         if imghdr.what(wallpaper_path) == 'jpeg':
-            name = uuid.uuid3(uuid.NAMESPACE_DNS, wallpaper)
-            wallpaper_name = str(name) + '.jpg'
+            # 计算文件的 MD5 哈希值
+            md5_hash = hashlib.md5()
+            with open(wallpaper_path, 'rb') as f:
+                while chunk := f.read(8192):
+                    md5_hash.update(chunk)
+            wallpaper_name = md5_hash.hexdigest() + '.jpg'
             save_path = os.path.join(save_folder_temp, wallpaper_name)
             shutil.copyfile(wallpaper_path, save_path)
             # print('save wallpaper ' + save_path)
