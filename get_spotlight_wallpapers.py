@@ -5,86 +5,51 @@
 import os
 import shutil
 import imghdr
-from PIL import Image
 import hashlib
+from PIL import Image
+import logging
 
+def check_save_folder():
+    global save_folder, save_folder_phone
+    base_path = os.path.dirname(os.path.realpath(__file__))
+    save_folder = os.path.join(base_path, 'wallpapers')
+    save_folder_phone = os.path.join(base_path, 'wallpapers_phone')
 
-def savefolder():
-    # save folder
-    global save_folder_temp, save_folder, save_folder_phone
-    save_folder_temp = os.path.dirname(os.path.realpath(__file__)) + '\\wallpapers_temp'
-    save_folder = os.path.dirname(os.path.realpath(__file__)) + '\\wallpapers'
-    save_folder_phone = os.path.dirname(os.path.realpath(__file__)) + '\\wallpapers_phone'
-    
-    if os.path.exists(save_folder_temp):
-        print('existed')
-    else:
-        os.makedirs(save_folder_temp)
-
-    if os.path.exists(save_folder):
-        print('existed')
-    else:
-        os.makedirs(save_folder)
-
-    if os.path.exists(save_folder_phone):
-            print('existed')
-    else:
-        os.makedirs(save_folder_phone)
-
-
-def wallpapers_temp():
-    wallpapers = os.listdir(wallpaper_folder)
-    for wallpaper in wallpapers:
-        wallpaper_path = os.path.join(wallpaper_folder, wallpaper)
-        if imghdr.what(wallpaper_path) == 'jpeg':
-            # 计算文件的 MD5 哈希值
-            md5_hash = hashlib.md5()
-            with open(wallpaper_path, 'rb') as f:
-                while chunk := f.read(8192):
-                    md5_hash.update(chunk)
-            wallpaper_name = md5_hash.hexdigest() + '.jpg'
-            save_path = os.path.join(save_folder_temp, wallpaper_name)
-            shutil.copyfile(wallpaper_path, save_path)
-            # print('save wallpaper ' + save_path)
-
-
-def wallpapers_filter():
-    wallpapers_2 = os.listdir(save_folder_temp)
-    for wallpaper_2 in wallpapers_2:
-        wallpaper_2_path = os.path.join(save_folder_temp, wallpaper_2)
-        img = Image.open(wallpaper_2_path)
-        imgSize = img.size
-        # 筛选出 1920 * 1080 / 1080 * 1920分辨率的壁纸
-        if (imgSize == (1920, 1080)):
-            save_2_path = os.path.join(save_folder, wallpaper_2)
-            shutil.copyfile(wallpaper_2_path, save_2_path)
-            print('save desktop wallpaper ' + save_2_path)
-        elif (imgSize == (1080, 1920)):
-            save_3_path = os.path.join(save_folder_phone, wallpaper_2)
-            shutil.copyfile(wallpaper_2_path, save_3_path)
-            print('save phone wallpaper ' + save_3_path)
+    for folder in [save_folder, save_folder_phone]:
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+            logging.info(f'Created folder: {folder}')
         else:
+            # logging.info(f'Folder already exists: {folder}')
             continue
 
+def process_wallpapers():
+    no_new_wallpaper = True
+    wallpapers = os.listdir(spotlight_wallpaper_folder)
+    for wallpaper in wallpapers:
+        wallpaper_path = os.path.join(spotlight_wallpaper_folder, wallpaper)
+        if imghdr.what(wallpaper_path) == 'jpeg':
+            with Image.open(wallpaper_path) as img:
+                imgSize = img.size
+                save_wallpaper_folder = save_folder if imgSize == (1920, 1080) else save_folder_phone if imgSize == (1080, 1920) else None
+                if save_wallpaper_folder is None:
+                    continue
+            md5_hash = hashlib.md5(open(wallpaper_path, 'rb').read()).hexdigest()
+            wallpaper_name = f"{md5_hash}.jpg"
+            save_path = os.path.join(save_wallpaper_folder, wallpaper_name)
+            if not os.path.exists(save_path):
+                shutil.copyfile(wallpaper_path, save_path)
+                logging.info(f'Saved {wallpaper_name} in {os.path.basename(save_wallpaper_folder)}.')
+                no_new_wallpaper = False
+    if no_new_wallpaper:
+        logging.info(f'No new wallpapers found')
 
 def main():
-
-    savefolder()
-
-    # wallpapers folder
-    global wallpaper_folder
-    wallpaper_folder = os.getenv('LOCALAPPDATA') + ('\\Packages\\Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy\\LocalState\\Assets')
-
-    #first filter
-    wallpapers_temp()
-
-    # second filter
-    wallpapers_filter()
-
-    # delete temp folder
-    shutil.rmtree(save_folder_temp)
-    input()
+    logging.basicConfig(level=logging.INFO)
+    check_save_folder()
+    global spotlight_wallpaper_folder
+    spotlight_wallpaper_folder = os.path.join(os.getenv('LOCALAPPDATA'), 'Packages', 'Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy', 'LocalState', 'Assets')
+    process_wallpapers()
 
 if __name__ == '__main__':
     main()
-
